@@ -32,9 +32,10 @@ public class VariableService {
         if (variableRepository.count() > 200) { // 가변 확장자가 200개가 넘으면 추가 할 수 없다 !
                 message.setMessage("확장자 저장 공간이 부족합니다.");
         }
-        Variable variable = Variable.builder().name(name).build();
 
-        if (duplicateCheck(variable)) { // 중복 체크
+
+        if (!duplicateCheck(name)) { // 중복 체크
+            Variable variable = Variable.builder().name(name).build();
             variableRepository.save(variable);
         } else {
             message.setMessage("중복입니다 !");
@@ -42,16 +43,8 @@ public class VariableService {
         return message;
 
     }
-    public Boolean duplicateCheck(Variable variable) { // 중복체크
-
-        Optional<Variable> variable1 = variableRepository.findById(variable.getId());
-
-        if (variable1.isPresent()) {
-            return false;
-        }
-        else {
-            return true;
-        }
+    public Boolean duplicateCheck(String name) { // 중복체크
+        return variableRepository.existsByName(name);
     }
     public Message deleteVariable(int id){ // 가변 확장자 삭제 기능
        Optional<Variable> variable1 = variableRepository.findById(id);
